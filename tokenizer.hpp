@@ -99,18 +99,21 @@ public:
   std::string value;
 
   CppToken( ) : line( 0 ), column( 0 ), key( Invalid ) { }
+  CppToken( int lin, int col, int k = CppToken::Invalid ) : line( lin ), column( col ), key( k ) { }
   CppToken( const CppToken & ) = default;
   CppToken( CppToken && ) = default;
   CppToken &operator=( const CppToken & ) = default;
   CppToken &operator=( CppToken && ) = default;
 
   CppToken( int l, int c ) : line( l ), column( c ), key( Invalid ) { }
-  CppToken( int l, int c, int k ) : line( l ), column( c ), key( k ) { }
-  CppToken( int l, int c, const char *begin, const char *end ) :
-    line( l ),
-    column( c ),
-    key( Identifier ),
-    value( begin, end ) {
+
+  void set( const char *begin, const char *end ) {
+    value.assign( begin, end );
+    key = Identifier;
+  }
+  void set( int k ) {
+    value.clear( );
+    key = k;
   }
 
   // Si TRUE, no se puede continuar, ni rellenando el buffer.
@@ -209,6 +212,11 @@ class CppStringTokenizer {
       ++ptr;
 
       return tmp;
+    }
+    Position &operator+=( size_t l ) {
+      line += static_cast< int >( l );
+      ptr += l;
+      return *this;
     }
   };
 
